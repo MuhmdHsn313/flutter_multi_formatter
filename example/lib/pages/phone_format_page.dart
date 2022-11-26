@@ -10,14 +10,9 @@ class _PhoneFormatPageState extends State<PhoneFormatPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   PhoneCountryData? _countryData;
   TextEditingController _phoneController = TextEditingController();
-
-  /// this callback is called in PhoneInputFormatter when
-  /// a country is detected by a phone code
-  void _onCountrySelected(PhoneCountryData? countryData) {
-    setState(() {
-      _countryData = countryData;
-    });
-  }
+  TextEditingController _russianPhoneController =
+      TextEditingController(text: '9998887766');
+  PhoneCountryData? _initialCountryData;
 
   @override
   void dispose() {
@@ -47,6 +42,7 @@ class _PhoneFormatPageState extends State<PhoneFormatPage> {
             child: Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _getText('Type a phone number here and it will automatically' +
                       ' format and detect a country. If the number' +
@@ -66,7 +62,11 @@ class _PhoneFormatPageState extends State<PhoneFormatPage> {
                     keyboardType: TextInputType.phone,
                     inputFormatters: [
                       PhoneInputFormatter(
-                        onCountrySelected: _onCountrySelected,
+                        onCountrySelected: (PhoneCountryData? countryData) {
+                          setState(() {
+                            _countryData = countryData;
+                          });
+                        },
                         allowEndlessPhone: false,
                       )
                     ],
@@ -75,6 +75,56 @@ class _PhoneFormatPageState extends State<PhoneFormatPage> {
                     _countryData == null
                         ? 'A country is not detected'
                         : 'The country is: ${_countryData?.country}',
+                  ),
+                  SizedBox(height: 30.0),
+                  _getText(
+                    'The next input uses a predefined country code',
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: CountryDropdown(
+                          printCountryName: true,
+                          initialCountryCode: 'RU',
+                          onCountrySelected: (PhoneCountryData countryData) {
+                            setState(() {
+                              _initialCountryData = countryData;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      Expanded(
+                        flex: 5,
+                        child: TextFormField(
+                          key: ValueKey(_initialCountryData ?? 'country'),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: _initialCountryData
+                                ?.phoneMaskWithoutCountryCode,
+                            hintStyle:
+                                TextStyle(color: Colors.black.withOpacity(.3)),
+                            errorStyle: TextStyle(
+                              color: Colors.red,
+                            ),
+                          ),
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            PhoneInputFormatter(
+                              allowEndlessPhone: true,
+                              defaultCountryCode:
+                                  _initialCountryData?.countryCode,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  _getText(
+                    _initialCountryData == null
+                        ? 'A country is not detected'
+                        : 'The country is: ${_initialCountryData?.country}',
                   ),
                   SizedBox(
                     height: 10.0,
@@ -129,6 +179,58 @@ class _PhoneFormatPageState extends State<PhoneFormatPage> {
                             child: Center(
                               child: Text(
                                 'Apply Format',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Type a phone to format',
+                      hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(.3),
+                      ),
+                      errorStyle: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    controller: _russianPhoneController,
+                    validator: (String? value) {
+                      if (!isPhoneValid(
+                        value ?? '',
+                        allowEndlessPhone: true,
+                        defaultCountryCode: 'RU',
+                      )) {
+                        return 'Phone is invalid';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    height: 50,
+                    child: MaterialButton(
+                      textColor: Colors.white,
+                      color: Colors.pink,
+                      onPressed: () {
+                        _russianPhoneController.text = formatAsPhoneNumber(
+                              _russianPhoneController.text,
+                              allowEndlessPhone: false,
+                              defaultCountryCode: 'RU',
+                            ) ??
+                            '';
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                'Apply Format for RU +7',
                               ),
                             ),
                           ),

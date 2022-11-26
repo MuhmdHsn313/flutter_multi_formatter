@@ -84,12 +84,12 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_multi_formatter:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "2.5.1"
+    version: "2.9.9"
   flutter_test:
     dependency: "direct dev"
     description: flutter

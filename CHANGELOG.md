@@ -1,3 +1,84 @@
+## [2.9.9]
+- Cleared some prints
+## [2.9.8]
+- Fixed a bug when pinyin formatter removed all characters that didn't match valid syllables
+## [2.9.7]
+- Fixed a period at the end if mantissa length is 0 https://github.com/caseyryan/flutter_multi_formatter/issues/106
+## [2.9.6]
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/105
+## [2.9.5]
+- Added hsk levels to HanziUtils
+## [2.9.4]
+- Fixed a problem when pinyin splitter didn't work if there's only one syllable provided
+## [2.9.3]
+- More fixes to pinyin utils
+## [2.9.2]
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/104
+## [2.9.1]
+- Fixed crashes in PinyinUtils if the provided string is empty
+## [2.9.0]
+- Added more pinyin utils + HanziUtils
+- Added to utility methods for currencies isCryptoCurrency(String currencyId) and isFiatCurrency(String currencyId)
+## [2.8.8]
+- One more minor fix for PinyinUtils
+## [2.8.7]
+- Fixed Pakistan number mask https://github.com/caseyryan/flutter_multi_formatter/issues/103
+## [2.8.6]
+- Fixed PinyinUtils.simplifyPinyin() it could brake on pinyins 
+with the same letters coming in a row like bùdéérzhī 
+## [2.8.5]
+- Cleaned up some prints
+## [2.8.4]
+- Advanced Pinyin splitter. It does not depend on regular expressions anymore
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/100
+instead it uses a list of real syllables thus works much better
+it can also detect a syllable tone
+## [2.8.2]
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/97
+## [2.8.1]
+- Added a utility method PinyinUtils.simplifyPinyin();
+## [2.8.0]
+- Introducing PinyinFormatter for Chinese language 
+## [2.7.6]
+- PhoneCountryData now has toMap() method, that converts it into a hash map. 
+This might be useful e.g. for json encoders/revivers 
+## [2.7.5]
+- Fixed a critical bug with CreditCardExpirationInputFormatter https://github.com/caseyryan/flutter_multi_formatter/issues/96
+## [2.7.4]
+- Removed "borderRadius" parameter from CountryDropdown to make it compatible with some older Flutter versions
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/92
+## [2.7.2]
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/93
+## [2.7.1]
+- Added "printCountryName" option to CountryDropdown
+## [2.7.0]
+- Added a possibility to add a pre-defined country code for phone formatter
+See example to know how to use it. And added a new dropdown type CountryDropdown
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/91
+- https://github.com/caseyryan/flutter_multi_formatter/issues/89
+## [2.6.2]
+- Merged https://github.com/caseyryan/flutter_multi_formatter/pull/88
+## [2.6.1]
+- Fixed currency input formatter empty value error https://github.com/caseyryan/flutter_multi_formatter/issues/87
+## [2.6.0]
+- Made it possible to enter a leading plus https://github.com/caseyryan/flutter_multi_formatter/issues/85
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/80
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/86
+- Deprecated MoneyInputFormatter in favor of a more reliable new CurrencyInputFormatter
+## [2.5.8]
+- Added a MasterCard 52* credit card support
+## [2.5.7]
+- Added a support for Diners Club cards starting with 30
+## [2.5.6]
+- Mastercard 222* support
+## [2.5.5]
+- Fixed Iraq phone number https://github.com/caseyryan/flutter_multi_formatter/pull/82
+## [2.5.4]
+- Added more card systems support
+- CreditCardCvvInputFormatter now accepts ```isAmericaExpress``` value
+ if it's true, it will accept 4 digits, else 3 https://github.com/caseyryan/flutter_multi_formatter/issues/76
+- Merged flutter lint changes https://github.com/caseyryan/flutter_multi_formatter/pull/81
+- Rewritten MaskedInputFormatter. Now it's more robust and correct https://github.com/caseyryan/flutter_multi_formatter/issues/73
 ## [2.5.1]
 - New PosInputFormatter. Thanks to [SimoneBressan](https://github.com/SimoneBressan) for this contribution 
 - Fixed the issue with CreditCardExpirationDateFormatter https://github.com/caseyryan/flutter_multi_formatter/issues/70

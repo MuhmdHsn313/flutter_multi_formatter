@@ -31,13 +31,15 @@ import 'package:flutter/services.dart';
 import 'formatter_utils.dart';
 
 class CardSystem {
+  static const String MIR = 'MIR';
+  static const String UNION_PAY = 'UnionPay';
   static const String VISA = 'Visa';
   static const String MASTERCARD = 'Mastercard';
   static const String JCB = 'JCB';
   static const String DISCOVER = 'Discover';
   static const String MAESTRO = 'Maestro';
   static const String AMERICAN_EXPRESS = 'Amex';
-  static const String MIR = 'MIR';
+  static const String DINERS_CLUB = 'DinersClub';
 }
 
 class CreditCardNumberInputFormatter extends TextInputFormatter {
@@ -264,34 +266,70 @@ class _CardSystemDatas {
       'numDigits': 16,
     },
     {
+      'system': CardSystem.DINERS_CLUB,
+      'systemCode': '14',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
+      'system': CardSystem.DINERS_CLUB,
+      'systemCode': '36',
+      'numberMask': '0000 000000 0000',
+      'numDigits': 14,
+    },
+    {
+      'system': CardSystem.DINERS_CLUB,
+      'systemCode': '54',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
+      'system': CardSystem.DINERS_CLUB,
+      'systemCode': '30',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
       'system': CardSystem.MASTERCARD,
       'systemCode': '5',
       'numberMask': '0000 0000 0000 0000',
       'numDigits': 16,
     },
     {
+      'system': CardSystem.MASTERCARD,
+      'systemCode': '222',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
+      'system': CardSystem.MASTERCARD,
+      'systemCode': '2720',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
       'system': CardSystem.AMERICAN_EXPRESS,
-      'systemCode': '3',
+      'systemCode': '34',
+      'numberMask': '0000 000000 00000',
+      'numDigits': 15,
+    },
+    {
+      'system': CardSystem.AMERICAN_EXPRESS,
+      'systemCode': '37',
       'numberMask': '0000 000000 00000',
       'numDigits': 15,
     },
     {
       'system': CardSystem.JCB,
-      'systemCode': '35',
+      'systemCode': '3589',
       'numberMask': '0000 0000 0000 0000 000',
       'numDigits': 19,
     },
     {
       'system': CardSystem.JCB,
-      'systemCode': '35',
+      'systemCode': '3528',
       'numberMask': '0000 0000 0000 0000',
       'numDigits': 16,
-    },
-    {
-      'system': CardSystem.VISA,
-      'systemCode': '4',
-      'numberMask': '00000 00000 00000 0000',
-      'numDigits': 19,
     },
     {
       'system': CardSystem.DISCOVER,
@@ -319,9 +357,27 @@ class _CardSystemDatas {
     },
     {
       'system': CardSystem.MIR,
-      'systemCode': '220',
+      'systemCode': '2200',
       'numberMask': '0000 0000 0000 0000',
       'numDigits': 16,
+    },
+    {
+      'system': CardSystem.MIR,
+      'systemCode': '2204',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
+      'system': CardSystem.UNION_PAY,
+      'systemCode': '62',
+      'numberMask': '0000 0000 0000 0000',
+      'numDigits': 16,
+    },
+    {
+      'system': CardSystem.UNION_PAY,
+      'systemCode': '62',
+      'numberMask': '0000 0000 0000 0000 000',
+      'numDigits': 19,
     },
   ];
 }
