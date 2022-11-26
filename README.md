@@ -1,8 +1,27 @@
 # flutter_multi_formatter
 
-<a href="https://pub.dev/packages/flutter_multi_formatter"><img src="https://img.shields.io/pub/v/flutter_multi_formatter?logo=dart" alt="pub.dev"></a> [![likes](https://badges.bar/flutter_multi_formatter/likes)](https://pub.dev/packages/flutter_multi_formatter/score) [![popularity](https://badges.bar/flutter_multi_formatter/popularity)](https://pub.dev/packages/flutter_multi_formatter/score) [![pub points](https://badges.bar/flutter_multi_formatter/pub%20points)](https://pub.dev/packages/flutter_multi_formatter/score) [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart) <a href="https://github.com/Solido/awesome-flutter">
+<a href="https://pub.dev/packages/flutter_multi_formatter"><img src="https://img.shields.io/pub/v/flutter_multi_formatter?logo=dart" alt="pub.dev"></a>[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart) <a href="https://github.com/Solido/awesome-flutter">
 <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square" />
 </a>
+
+
+**You might also like my other packages**
+
+***lite_state*** 
+(Very simple and easy to use state machine for Flutter)
+https://pub.dev/packages/lite_state
+
+<a href="https://pub.dev/packages/lite_state"><img src="https://img.shields.io/pub/v/lite_state?logo=dart" alt="pub.dev"></a>[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart) <a href="https://github.com/Solido/awesome-flutter">
+<img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square" />
+</a>
+
+***flutter_instagram_storyboard***
+(A UI for setting up stories like in Instagram)
+https://pub.dev/packages/flutter_instagram_storyboard
+
+<a href="https://pub.dev/packages/flutter_instagram_storyboard"><img src="https://img.shields.io/pub/v/flutter_instagram_storyboard?logo=dart" alt="pub.dev"></a>[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart) <a href="https://github.com/Solido/awesome-flutter"></a>
+
+
 
 ## Formatters Included
 
@@ -10,6 +29,7 @@
 2. `Credit / Debit Card Formatter`
 3. `Money Formatter`
 4. `Masked Formatter`
+5. `Pinyin syllable separating formatter`
 
 ## Special utilities 
 
@@ -19,7 +39,13 @@
 4. `"Is digit" checker (Simply checks if an input string value a digit or not)`
 5. `Currency string formatter (allows to convert a number to a currency string representation e.g. this 10000 to this 10,000.00$)`
 6. `Unfocuser (a widget that is used to unfocus any text fields without any boilerplate code. Extremely simple to use)`
-
+7. PinyinUtils class that contains a few usefull methods to work with chinese 
+pinyin
+    - PinyinUtils.clearPunctuation : removes all punctuations from a string, including special chinese punctuation
+    - PinyinUtils.containsTone: returns true if a string contains some tone. False otherwise
+    - PinyinUtils.getPinyinTones returns a list of int's with all syllable tones in a sentence
+    - PinyinUtils.getPinyinTone the same as PinyinUtils.getPinyinTones but for a single syllable. Returns its tone. 5 means neutral tone
+    - PinyinUtils.splitToSyllables<T>: a generic function that can accept String or SyllableData as a generic constraint and return a list of objects of this type. SyllableData is more advanced then just a string. Use it if you need to know if a string is a valid pinyin as well as its tone
 
 
 ### Formatting a phone
@@ -51,6 +77,54 @@ PhoneInputFormatter(
     allowEndlessPhone: true,
 )
 ```
+## Using a pre-defined country code 
+
+<img src="https://github.com/caseyryan/images/blob/master/multi_formatter/phone_country_dropdown.gif?raw=true" width="240"/>
+
+```dart
+PhoneCountryData? _initialCountryData;
+...
+
+Row(
+  children: [
+    Expanded(
+      flex: 3,
+      child: CountryDropdown(
+        printCountryName: true,
+        initialCountryCode: 'RU',
+        onCountrySelected: (PhoneCountryData countryData) {
+          setState(() {
+            _initialCountryData = countryData;
+          });
+        },
+      ),
+    ),
+    SizedBox(width: 10.0),
+    Expanded(
+      flex: 5,
+      child: TextFormField(
+        key: ValueKey(_initialCountryData ?? 'country'),
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: _initialCountryData?.phoneMaskWithoutCountryCode,
+          hintStyle: TextStyle(color: Colors.black.withOpacity(.3)),
+          errorStyle: TextStyle(
+            color: Colors.red,
+          ),
+        ),
+        keyboardType: TextInputType.phone,
+        inputFormatters: [
+          PhoneInputFormatter(
+            allowEndlessPhone: false,
+            defaultCountryCode: _initialCountryData?.countryCode,
+          )
+        ],
+      ),
+    )
+  ],
+)
+```
+
 
 ### Formatting a credit / debit card
 
@@ -72,6 +146,7 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 ```dart
 /// for phone numbers with a fully automated detection
 PhoneInputFormatter
+PinyinFormatter
 
 /// for anything that can be masked
 MaskedInputFormatter
@@ -81,12 +156,8 @@ CreditCardNumberInputFormatter
 CreditCardCvcInputFormatter
 CreditCardExpirationDateFormatter
 
-/// for any inputs where you need to restrict or
-/// allow some characters
-RestrictingInputFormatter
-
 /// for currencies
-MoneyInputFormatter
+CurrencyInputFormatter
 PosInputFormatter
 ```
 
@@ -145,7 +216,7 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 bool isDigit(String character);
 ```
 
-toCurrencyString() is used by the MoneyInputFormatter internally 
+toCurrencyString() is used by the CurrencyInputFormatter internally 
 but you can also use it directly
 ```dart
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -162,19 +233,19 @@ String toCurrencyString(String value, {
     bool useSymbolPadding = false
 });
 
-print(toCurrencyString('123456', leadingSymbol: MoneySymbols.DOLLAR_SIGN)); // $123,456.00
+print(toCurrencyString('123456', leadingSymbol: CurrencySymbols.DOLLAR_SIGN)); // $123,456.00
 
 /// the values can also be shortened to thousands, millions, billions... 
 /// in this case a 1000 will be displayed as 1K, and 1250000 will turn to this 1.25M
 var result = toCurrencyString(
     '125000', 
-    leadingSymbol: MoneySymbols.DOLLAR_SIGN,
+    leadingSymbol: CurrencySymbols.DOLLAR_SIGN,
     shorteningPolicy: ShorteningPolicy.RoundToThousands
 ); // $125K
 
 result = toCurrencyString(
     '1250000', 
-    leadingSymbol: MoneySymbols.DOLLAR_SIGN,
+    leadingSymbol: CurrencySymbols.DOLLAR_SIGN,
     shorteningPolicy: ShorteningPolicy.RoundToMillions
 ); // 1.25M
 
@@ -186,10 +257,10 @@ double, int and String.
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 var someNumericValue = 123456;
-print(someNumericValue.toCurrencyString(leadingSymbol: MoneySymbols.DOLLAR_SIGN)); // $123,456.00
+print(someNumericValue.toCurrencyString(leadingSymbol: CurrencySymbols.DOLLAR_SIGN)); // $123,456.00
 
 var someNumericStringValue = '123456';
-print(someNumericStringValue.toCurrencyString(trailingSymbol: MoneySymbols.EURO_SIGN)); // 123,456.00€
+print(someNumericStringValue.toCurrencyString(trailingSymbol: CurrencySymbols.EURO_SIGN)); // 123,456.00€
 ```  
 
 ```dart 
@@ -272,12 +343,15 @@ All supported systems are available as string constants in
 
 ```dart
 class CardSystem {
+  static const String MIR = 'MIR';
+  static const String UNION_PAY = 'UnionPay';
   static const String VISA = 'Visa';
   static const String MASTERCARD = 'Mastercard';
   static const String JCB = 'JCB';
   static const String DISCOVER = 'Discover';
   static const String MAESTRO = 'Maestro';
-  static const String AMERICAN_EXPRESS= 'Amex';
+  static const String AMERICAN_EXPRESS = 'Amex';
+  static const String DINERS_CLUB = 'DinersClub';
 }
 ```
 Anyway, if the number is not supported it will just be returned as it is and your input will not 
@@ -347,15 +421,15 @@ TextFormField(
 ## Money Input formatter
 
 ```dart
-MoneyInputFormatter()
+CurrencyInputFormatter()
 ```
 
 ```dart
 TextFormField(
     keyboardType: TextInputType.number,
     inputFormatters: [
-        MoneyInputFormatter(
-            leadingSymbol: MoneySymbols.DOLLAR_SIGN
+        CurrencyInputFormatter(
+            leadingSymbol: CurrencySymbols.DOLLAR_SIGN
         )
     ],
 ),
@@ -364,8 +438,8 @@ TextFormField(
 TextFormField(
     keyboardType: TextInputType.number,
     inputFormatters: [
-        MoneyInputFormatter(
-            trailingSymbol: MoneySymbols.EURO_SIGN,
+        CurrencyInputFormatter
+            trailingSymbol: CurrencySymbols.EURO_SIGN,
             useSymbolPadding: true,
             mantissaLength: 3 // the length of the fractional side
         )
@@ -387,7 +461,38 @@ TextFormField(
         PosInputFormatter(),
     ],
 ),
-...
+```
+
+
+## Chinese Pinyin separating
+
+<img src="https://github.com/caseyryan/images/blob/master/multi_formatter/pinyin.gif?raw=true" width="240"/>
+
+```dart
+PinyinFormatter
+```
+Allows to split a phrase into pinyin syllables
+e.g. wohenhaonine?
+will turn into 
+wo'hen'hao'ni'ne? 
+It works irregarding tones, so you can enter text with plain english
+characters and it will still work
+
+```dart
+TextFormField(
+    inputFormatters: [
+        PinyinFormatter(),
+    ],
+),
+```
+
+Or you can use some utility methods like 
+```dart 
+final value = PinyinUtils.splitToSyllablesBySeparator(
+    'wǒhěngāoxìngrènshinǐ',
+);
+print(value); /// wǒ'hěn'gāo'xìng'rèn'shi'nǐ
+```
 
 
 For more details see [example](https://github.com/caseyryan/flutter_multi_formatter/tree/master/example) project. And feel free to open an issue if you find any bugs of errors
