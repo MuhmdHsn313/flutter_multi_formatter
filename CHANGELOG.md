@@ -1,3 +1,25 @@
+## [2.10.4]
+- Unfocuser now has isEnabled parameter so it can be easily disabled when it's 
+not necessage e.g. on the web
+## [2.10.3]
+- CountryDropdown now does not have initialCountryCode parameter but uses initialPhoneCode instead, because some countries might have a few phone codes and we need to determin which one of them should be used
+## [2.10.2]
+- Fixed a problem with incorrect card system detection
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/113
+## [2.10.1]
+- A few fixes to PinyinUtils
+## [2.10.0]
+- Merged https://github.com/caseyryan/flutter_multi_formatter/pull/112
+## [2.9.14]
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/111
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/110
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/108
+- Fixed https://github.com/caseyryan/flutter_multi_formatter/issues/107
+## [2.9.11]
+- Added promptTonesForPinyin() static function to PinyinUtils. 
+It can give you a list of its vowels with all possible tones
+## [2.9.10]
+- Added di pinyin to HanziUtils
 ## [2.9.9]
 - Cleared some prints
 ## [2.9.8]

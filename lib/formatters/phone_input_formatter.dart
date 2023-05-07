@@ -532,6 +532,7 @@ class PhoneCountryData {
   }
 
   List<String>? _altMasksWithoutCountryCodes;
+
   List<String>? get altMasksWithoutCountryCodes {
     if (_altMasksWithoutCountryCodes != null) {
       return _altMasksWithoutCountryCodes;
@@ -577,9 +578,12 @@ class PhoneCountryData {
     };
   }
 
-  factory PhoneCountryData.fromMap(Map value) {
+  factory PhoneCountryData.fromMap(
+    Map value, {
+    String lang = '',
+  }) {
     final countryData = PhoneCountryData._init(
-      country: value['country'],
+      country: value['country$lang'],
 
       /// not all countryDatas need to separate phoneCode and
       /// internalPhoneCode. In most cases they are the same
@@ -658,9 +662,14 @@ class PhoneCodes {
   }
 
   static List<PhoneCountryData>? _allCountryDatas;
-  static List<PhoneCountryData> getAllCountryDatas() {
+
+  static List<PhoneCountryData> getAllCountryDatas({String langCode = ''}) {
     if (_allCountryDatas == null) {
-      _allCountryDatas = _data.map((e) => PhoneCountryData.fromMap(e)).toList();
+      _allCountryDatas = _data
+          .map((e) => e.containsKey('country${langCode.toUpperCase()}')
+              ? PhoneCountryData.fromMap(e, lang: langCode)
+              : PhoneCountryData.fromMap(e))
+          .toList();
       _allCountryDatas!.sort((a, b) => a.phoneCode!.compareTo(b.phoneCode!));
     }
     return _allCountryDatas!;

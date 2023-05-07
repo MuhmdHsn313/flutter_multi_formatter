@@ -221,6 +221,7 @@ class PinyinUtils {
     "wei",
     "hao",
     "tai",
+    "lue",
     "gan",
     "lve",
     "zha",
@@ -436,6 +437,7 @@ class PinyinUtils {
     "me",
     "si",
     "ma",
+    "pi",
     "mi",
     "ce",
     "te",
@@ -443,7 +445,9 @@ class PinyinUtils {
     "ai",
     "fa",
     "ba",
+    "ou",
     "e",
+    "o",
     "a",
     "r",
   ];
@@ -462,6 +466,23 @@ class PinyinUtils {
     return value.replaceAll(_punctuationRegex, '');
   }
 
+  /// Pass a tone or untoned pinyin and get a list
+  /// of toned vowels that can be in this pinyin
+  static List<String> promptTonesForPinyin(String pinyin) {
+    final chars = HashSet<String>.from(
+      PinyinUtils.simplifyPinyin(pinyin).split(''),
+    ).toList();
+    final temp = <String>[];
+    for (var i = 0; i < chars.length; i++) {
+      final char = chars[i];
+      if (_mappedVowels.containsKey(char)) {
+        temp.addAll(_mappedVowels[char]!);
+      }
+    }
+
+    return temp;
+  }
+
   final _toneRegexp = RegExp(r'[āáǎàēéěèōóǒòīíǐìūúǔùǖǘǚǜü]+');
 
   bool containsTone(String text) {
@@ -470,7 +491,13 @@ class PinyinUtils {
 
   /// Returns a list of tones for the whole sentence
   static List<int> getPinyinTones(String sentence) {
-    return splitToSyllables<String>(sentence).map(getPinyinTone).toList();
+    return splitToSyllables<SyllableData>(sentence)
+        .where((e) => e.isValid)
+        .map(
+          (e) => e.value,
+        )
+        .map(getPinyinTone)
+        .toList();
   }
 
   /// Detects a tone of a single syllable where 5 means neutral tone
@@ -499,6 +526,18 @@ class PinyinUtils {
   static const _uS = 'ūúǔŭù';
   static const _vS = 'v̄v́v̆v̌v̀';
   static const _uDottedS = '(?:ü|ǖ|ǘ|ǚ|ǚ|ü̆|ǜ)';
+
+  static const Map<String, List<String>> _mappedVowels = {
+    'a': ['ā', 'á', 'ǎ', 'à'],
+    'e': ['ē', 'é', 'ě', 'è'],
+    'i': ['ī', 'í', 'ǐ', 'ì'],
+    'o': ['ō', 'ó', 'ǒ', 'ò'],
+    'u': ['ū', 'ú', 'ǔ', 'ù', 'ü', 'ǖ', 'ǘ', 'ǚ', 'ǜ'],
+  };
+
+  static Map<String, List<String>> get mappedVowels {
+    return _mappedVowels;
+  }
 
   static final RegExp _aRegex = RegExp('[$_aS]');
   static final RegExp _eRegex = RegExp('[$_eS]');
@@ -559,31 +598,49 @@ class PinyinUtils {
   /// converts all spcial symbols in pinyin to it's
   /// normal latin analog like ě -> e or ǔ -> u
   static String simplifyPinyin(String pinyin) {
+    int i = pinyin.length;
     while (pinyin.contains(_aRegex)) {
+      i--;
       pinyin = pinyin.replaceFirst(_aRegex, 'a');
+      if (i <= 0) break;
     }
+    i = pinyin.length;
     while (pinyin.contains(_eRegex)) {
+      i--;
       pinyin = pinyin.replaceFirst(_eRegex, 'e');
+      if (i <= 0) break;
     }
+    i = pinyin.length;
     while (pinyin.contains(_iRegex)) {
+      i--;
       pinyin = pinyin.replaceFirst(_iRegex, 'i');
+      if (i <= 0) break;
     }
+    i = pinyin.length;
     while (pinyin.contains(_oRegex)) {
+      i--;
       pinyin = pinyin.replaceFirst(_oRegex, 'o');
+      if (i <= 0) break;
     }
+    i = pinyin.length;
     while (pinyin.contains(_uRegex)) {
+      i--;
       pinyin = pinyin.replaceFirst(_uRegex, 'u');
+      if (i <= 0) break;
     }
 
     /// i is just a safeguard from an endless loop
-    int i = pinyin.length;
+    i = pinyin.length;
     while (pinyin.contains(_uDottedRegex)) {
       i--;
       pinyin = pinyin.replaceFirst(_uDottedRegex, 'u');
       if (i <= 0) break;
     }
+    i = pinyin.length;
     while (pinyin.contains(_vRegex)) {
+      i--;
       pinyin = pinyin.replaceFirst(_vRegex, 'v');
+      if (i <= 0) break;
     }
     return pinyin;
   }
@@ -593,6 +650,7 @@ class PinyinUtils {
   /// so it would split more precisely
   static const Map<String, String> _splittableExceptions = {
     'nine': 'ni ne',
+    'jini': 'ji ni',
   };
 
   static String splitToSyllablesBySeparator(
@@ -619,6 +677,7 @@ class PinyinUtils {
       T == String || T == SyllableData,
       'T can only be a String or a SyllableData',
     );
+    value = value.replaceAll('\'', '');
     var simplified = simplifyPinyin(value);
 
     /// тут надо вставить предопределенные пробелы, чтобы
@@ -748,7 +807,8 @@ class PinyinUtils {
             subsyllables.first.currentSyllable,
           ),
       );
-    } else if (_hasIncomplete(subsyllables)) {
+    } else if (_hasIncomplete(subsyllables) ||
+        (allPossibleSentences?.isEmpty == true && subsyllables.isNotEmpty)) {
       allPossibleSentences ??= [];
       String tempValue = simplified;
       _Sentence sentence = _Sentence(
