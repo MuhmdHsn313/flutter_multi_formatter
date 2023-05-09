@@ -10,6 +10,7 @@ class CountryDropdown extends StatefulWidget {
   final CountryItemBuilder? listItemBuilder;
   final bool printCountryName;
   final String? initialPhoneCode;
+  final List<PhoneCountryData>? filter;
   final ValueChanged<PhoneCountryData> onCountrySelected;
 
   final int elevation;
@@ -29,7 +30,10 @@ class CountryDropdown extends StatefulWidget {
   final double? menuMaxHeight;
   final bool? enableFeedback;
   final AlignmentGeometry alignment;
+  final bool triggerOnCountrySelectedInitially;
 
+  /// [filter] if you need a predefined list of countries only,
+  /// pass it here
   /// [initialPhoneCode] a phone code of the country without leading +
   /// [selectedItemBuilder] use this if you want to make
   /// the selected item look the way you want
@@ -38,12 +42,17 @@ class CountryDropdown extends StatefulWidget {
   /// [printCountryName] if true, it will display
   /// a country name under its flat and country code while
   /// the menu is open
+  /// [triggerOnCountrySelectedInitially] if you don't want onCountrySelected
+  /// to be triggered right away if you set an initialPhoneCode param,
+  /// pass false here. Description is here https://github.com/caseyryan/flutter_multi_formatter/issues/122
   const CountryDropdown({
     Key? key,
     this.selectedItemBuilder,
     this.listItemBuilder,
     this.printCountryName = false,
     this.initialPhoneCode,
+    this.triggerOnCountrySelectedInitially = true,
+    this.filter,
     required this.onCountrySelected,
     this.elevation = 8,
     this.style,
@@ -69,25 +78,29 @@ class CountryDropdown extends StatefulWidget {
 }
 
 class _CountryDropdownState extends State<CountryDropdown> {
+  PhoneCountryData? _initialValue;
+  late List<PhoneCountryData> _countryItems;
+
   @override
   void initState() {
-    _widgetsBinding.addPostFrameCallback((timeStamp) {
-      widget.onCountrySelected(_initialValue);
-    });
+    _countryItems = widget.filter ?? PhoneCodes.getAllCountryDatas();
+    if (widget.initialPhoneCode != null) {
+      _initialValue = _countryItems.firstWhereOrNull(
+              (c) => c.phoneCode == widget.initialPhoneCode) ??
+          _countryItems.first;
+    }
+    if (widget.triggerOnCountrySelectedInitially && _initialValue != null) {
+      _widgetsBinding.addPostFrameCallback((timeStamp) {
+        if (_initialValue != null) {
+          widget.onCountrySelected(_initialValue!);
+        }
+      });
+    }
     super.initState();
   }
 
   dynamic get _widgetsBinding {
     return WidgetsBinding.instance;
-  }
-
-  PhoneCountryData get _initialValue {
-    if (widget.initialPhoneCode != null) {
-      return PhoneCodes.getAllCountryDatas().firstWhereOrNull((c) =>
-              c.phoneCode == widget.initialPhoneCode) ??
-          PhoneCodes.getAllCountryDatas().first;
-    }
-    return PhoneCodes.getAllCountryDatas().first;
   }
 
   Widget _buildSelectedLabel(
@@ -177,7 +190,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
       elevation: widget.elevation,
       itemHeight: widget.itemHeight,
       selectedItemBuilder: (c) {
-        return PhoneCodes.getAllCountryDatas()
+        return _countryItems
             .map(
               (e) => DropdownMenuItem<PhoneCountryData>(
                 child: _buildSelectedLabel(e),
@@ -186,7 +199,7 @@ class _CountryDropdownState extends State<CountryDropdown> {
             )
             .toList();
       },
-      items: PhoneCodes.getAllCountryDatas()
+      items: _countryItems
           .map(
             (e) => DropdownMenuItem<PhoneCountryData>(
               child: _buildListLabel(e),
